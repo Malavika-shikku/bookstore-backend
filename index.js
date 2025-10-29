@@ -22,10 +22,23 @@ require('./databaseConnection')
 const bookstoreServer = express()
 
 //server using cors
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://bookstore-frontend-theta-black.vercel.app"  // ✅ your Vercel frontend
+];
+
 bookstoreServer.use(cors({
-  origin: "http://localhost:5173", // your React app URL
-  credentials: true,               // allow cookies / tokens if needed
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(" Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
 }));
+
 
 bookstoreServer.use(express.json())//parse json - middleware
 //bookstoreServer.use(appMiddleware)
