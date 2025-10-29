@@ -1,0 +1,1 @@
+mongodb+srv://malavikakshikku1599_db_user:malavika@cluster0.ywtvbrn.mongodb.net/bookstore?retryWrites=true&w=majority&appName=Cluster0
