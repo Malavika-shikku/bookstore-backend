@@ -33,37 +33,28 @@ exports.registerController = async (req,res)=>{
 }
 //login
 
-exports.loginController = async (req, res) => {
-  const { email, password } = req.body;
-  console.log("Login request:", email, password);
+exports.loginController = async (req,res)=>{
+    const {email,password} = req.body
+    console.log(email,password);
 
-  // Check if both email and password are provided
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
-  }
-
-  try {
-    const existingUser = await users.findOne({ email });
-
-    if (!existingUser) {
-      return res.status(404).json({ message: "Incorrect email id" });
+    try{
+        const existingUser = await users.findOne({email})
+        if(existingUser){
+            if(existingUser.password == password){
+                const token = jwt.sign({usermail:existingUser.email},'secretkey')
+                res.status(200).json({existingUser,token})
+            }else{
+                res.status(401).json("Incorrect password...")
+            }
+        }else{
+            res.status(404).json("Incorrect email id....")
+        }
+    }catch(err){
+        res.status(500).json(err)
     }
 
-    if (existingUser.password !== password) {
-      return res.status(401).json({ message: "Incorrect password" });
-    }
-
-    const token = jwt.sign({ usermail: existingUser.email }, "secretkey", {
-      expiresIn: "1d",
-    });
-
-    res.status(200).json({ existingUser, token });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-};
-
+    
+}
 
 //google login
 exports.googleLoginController = async (req,res)=>{
