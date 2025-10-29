@@ -28,16 +28,13 @@ const allowedOrigins = [
 ];
 
 bookstoreServer.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log(" Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: [
+    "http://localhost:5173",
+    "https://bookstore-fullstack.netlify.app"
+  ],
   credentials: true,
 }));
+
 
 
 bookstoreServer.use(express.json())//parse json - middleware
