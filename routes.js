@@ -1,105 +1,41 @@
-//import the express
-const express = require('express')
+const express = require('express');
+const jwtMiddleware = require('./middlewares/jwtMiddleware');
+const jwtAdminMiddleware = require('./middlewares/jwtAdminMiddleware');
+const multerConfig = require('./middlewares/multerMiddleware');
+const pdfMulterConfig = require('./middlewares/pdfMulterMiddleware');
 
-//import jwt middleware
-const jwtMiddleware = require('./middlewares/jwtMiddleware')
+const userController = require('./controllers/userController');
+const bookController = require('./controllers/bookController');
+const jobController = require('./controllers/jobController');
+const appController = require('./controllers/appController');
 
-//import admin middleware
-const jwtAdminMiddleware = require('./middlewares/jwtAdminMiddleware')
+const route = express.Router();
 
+// ---------- USER ROUTES ----------
+route.post('/register', userController.registerController);
+route.post('/login', userController.loginController);
+route.post('/google-login', userController.googleLoginController);
+route.get('/all-home-books', bookController.getHomeBookController);
 
-//import multerconfig
-const multerConfig = require('./middlewares/multerMiddleware')
+route.post('/add-book', jwtMiddleware, multerConfig.array('uploadedimages', 3), bookController.addBookController);
+route.get('/all-books', jwtMiddleware, bookController.getAllBookController);
+route.get('/view-book/:id', bookController.getABookController);
 
-const userController = require('./controllers/userController')
-const bookController = require('./controllers/bookController')
-const jobController = require('./controllers/jobController')
-const pdfMulterConfig = require('./middlewares/pdfMulterMiddleware')
-const appController = require('./controllers/appController')
-
-
-
-//instance creation
-const route = new express.Router('./controllers/userController')
-
-//path for register
-route.post('/register',userController.registerController)
-
-//path for login
-route.post('/login',userController.loginController)
-
-//path for google login
-route.post('/google-login',userController.googleLoginController)
-
-//path to all home  books
-
-route.get('/all-home-books',bookController.getHomeBookController)
-//---------user--------------
-
-
-
-
-//path for addbooks
-route.post('/add-book',jwtMiddleware,multerConfig.array('uploadedimages',3),bookController.addBookController)
-
-
-//path for all book page
-route.get('/all-books',jwtMiddleware,bookController.getAllBookController)
-
-
-//path to view a book
-route.get('/view-book/:id',bookController.getABookController)
-
-//path to get all jobs
-route.get('/all-jobs',jobController.getAllJobsController)
-
-//path to apply job
-route.post('/apply-job',jwtMiddleware,pdfMulterConfig.single("resume"),appController.addApplicationController)
-
-//user profile update
-route.put('/update-user', jwtMiddleware, multerConfig.single('profile'), userController.updateUserProfile)
-
-//path to get all user books
-route.get('/user-books', jwtMiddleware,bookController.getAllUserBookController)
-
-//path to delete all user books
-route.delete('/delete-user-books/:id', jwtMiddleware,bookController.deleteAllUserBookController)
-
-//path to get all brought books
-route.get('/user-brought-books', jwtMiddleware, bookController.getAllUserBroughtBookController)
-
-//make payment
-//console.log("makePayment type:", typeof bookController.makePayment);
-
+route.get('/all-jobs', jobController.getAllJobsController);
+route.post('/apply-job', jwtMiddleware, pdfMulterConfig.single('resume'), appController.addApplicationController);
+route.put('/update-user', jwtMiddleware, multerConfig.single('profile'), userController.updateUserProfile);
+route.get('/user-books', jwtMiddleware, bookController.getAllUserBookController);
+route.delete('/delete-user-books/:id', jwtMiddleware, bookController.deleteAllUserBookController);
+route.get('/user-brought-books', jwtMiddleware, bookController.getAllUserBroughtBookController);
 route.post('/make-payment', jwtMiddleware, bookController.makePayment);
 
+// ---------- ADMIN ROUTES ----------
+route.get('/admin-all-books', jwtAdminMiddleware, bookController.getAllBookAdminController);
+route.put('/approve-book', jwtAdminMiddleware, bookController.approveBookController);
+route.get('/all-users', jwtAdminMiddleware, userController.getAllUserController);
+route.post('/add-job', jobController.addJobController);
+route.get('/delete-job/:id', jobController.deleteAJobController);
+route.get('/all-application', appController.getAllPPlicationController);
+route.put('/admin-profile-update', jwtAdminMiddleware, multerConfig.single('profile'), userController.editAdminProfileController);
 
-
-//------------admin-----------
-
-//path for all books in admin
-route.get('/admin-all-books',jwtAdminMiddleware,bookController.getAllBookAdminController)
-
-//path to approve a book
-route.put('/approve-book',jwtAdminMiddleware,bookController.approveBookController)
-
-//path for all users in admin
-route.get('/all-users',jwtAdminMiddleware,userController.getAllUserController)
-
-//path for add new job
-route.post('/add-job', jobController.addJobController)
-
-//path to delete a job
-route.get('/delete-job/:id',jobController.deleteAJobController)
-
-//all applications
-route.get('/all-application',appController.getAllPPlicationController)
-
-
-//path to update admin profile
-route.put('/admin-profile-update',jwtAdminMiddleware,multerConfig.single('profile'),userController.editAdminProfileController)
-
-
-//routes export
-module.exports = route
-
+module.exports = route;
