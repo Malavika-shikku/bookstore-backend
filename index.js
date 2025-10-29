@@ -22,17 +22,13 @@ require('./databaseConnection')
 const bookstoreServer = express()
 
 //server using cors
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://bookstore-frontend-theta-black.vercel.app"  // ✅ your Vercel frontend
-];
-
 bookstoreServer.use(cors({
   origin: [
-    "http://localhost:5173",
-    "https://bookstore-fullstack.netlify.app"
+    "http://localhost:5173",              // for local development
+    "https://bookstore-final.netlify.app" // ✅ your deployed frontend
   ],
-  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
 
 
